@@ -13,6 +13,37 @@ import {
 
 export default function App() {
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [error, setError] = useState("");
+
+  // Hàm kiểm tra định dạng số điện thoại
+  const validatePhoneNumber = (number) => {
+    const regex = /^[0-9]{10}$/; // Kiểm tra định dạng số điện thoại 10 chữ số
+    return regex.test(number);
+  };
+
+  // Hàm xử lý khi nhập số điện thoại
+  const handleChangeText = (text) => {
+    // Format lại số điện thoại
+    const formattedText = text.replace(/[^0-9]/g, ""); // Chỉ cho phép ký tự số
+    setPhoneNumber(formattedText);
+
+    // Kiểm tra định dạng và cập nhật thông báo lỗi
+    if (!validatePhoneNumber(formattedText)) {
+      setError("Số điện thoại không đúng định dạng. Vui lòng nhập lại.");
+    } else {
+      setError("");
+    }
+  };
+
+  // Hàm xử lý khi nhấn nút "Tiếp tục"
+  const handleContinue = () => {
+    if (validatePhoneNumber(phoneNumber)) {
+      alert("Số điện thoại hợp lệ: " + phoneNumber);
+      // Thực hiện hành động tiếp theo ở đây
+    } else {
+      alert("Số điện thoại không đúng định dạng. Vui lòng nhập lại.");
+    }
+  };
 
   return (
     <KeyboardAvoidingView
@@ -34,16 +65,12 @@ export default function App() {
           keyboardType="numeric"
           maxLength={10}
           value={phoneNumber}
-          onChangeText={setPhoneNumber}
+          onChangeText={handleChangeText}
         />
+        {error ? <Text style={styles.errorText}>{error}</Text> : null}
         <TouchableOpacity
-          style={[
-            styles.button,
-            phoneNumber.length === 10
-              ? styles.buttonEnabled
-              : styles.buttonDisabled,
-          ]}
-          disabled={phoneNumber.length !== 10}
+          style={styles.buttonEnabled} // Luôn hiển thị màu xanh
+          onPress={handleContinue}
         >
           <Text style={styles.buttonText}>Tiếp tục</Text>
         </TouchableOpacity>
@@ -65,16 +92,15 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   shadowBox: {
-    // Hiệu ứng đổ bóng
     backgroundColor: "#fff",
     paddingVertical: 10,
     paddingHorizontal: 15,
     marginBottom: 10,
-    shadowColor: "#000", // Màu của bóng (trên iOS)
-    shadowOffset: { width: 0, height: 2 }, // Độ lệch bóng
-    shadowOpacity: 0.3, // Độ mờ của bóng
-    shadowRadius: 4, // Bán kính của bóng
-    elevation: 4, // Độ cao của bóng (trên Android)
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 4,
   },
   title: {
     fontSize: 24,
@@ -99,21 +125,21 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     paddingHorizontal: 10,
     fontSize: 16,
-    marginBottom: 40,
-  },
-  button: {
-    paddingVertical: 15,
-    borderRadius: 5,
-    alignItems: "center",
+    marginBottom: 5,
   },
   buttonEnabled: {
-    backgroundColor: "#0a84ff",
-  },
-  buttonDisabled: {
-    backgroundColor: "#e0e0e0",
+    paddingVertical: 15,
+    borderRadius: 5,
+    backgroundColor: "#0a84ff", // Màu xanh cho nút
+    alignItems: "center",
   },
   buttonText: {
     fontSize: 16,
     color: "#fff",
+  },
+  errorText: {
+    fontSize: 14,
+    color: "red", // Màu đỏ cho thông báo lỗi
+    marginBottom: 20,
   },
 });
