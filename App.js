@@ -10,24 +10,37 @@ import {
   Platform,
   StatusBar as RNStatusBar,
 } from "react-native";
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+
+// Tạo Stack Navigator
+const Stack = createStackNavigator();
 
 export default function App() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="SignInScreen">
+        <Stack.Screen name="SignInScreen" component={SignInScreen} />
+        <Stack.Screen name="HomeScreen" component={HomeScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
+
+// Màn hình đăng nhập
+function SignInScreen({ navigation }) {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [error, setError] = useState("");
 
-  // Hàm kiểm tra định dạng số điện thoại
   const validatePhoneNumber = (number) => {
     const regex = /^[0-9]{10}$/; // Kiểm tra định dạng số điện thoại 10 chữ số
     return regex.test(number);
   };
 
-  // Hàm xử lý khi nhập số điện thoại
   const handleChangeText = (text) => {
-    // Format lại số điện thoại
-    const formattedText = text.replace(/[^0-9]/g, ""); // Chỉ cho phép ký tự số
+    const formattedText = text.replace(/[^0-9]/g, "");
     setPhoneNumber(formattedText);
 
-    // Kiểm tra định dạng và cập nhật thông báo lỗi
     if (!validatePhoneNumber(formattedText)) {
       setError("Số điện thoại không đúng định dạng. Vui lòng nhập lại.");
     } else {
@@ -35,11 +48,9 @@ export default function App() {
     }
   };
 
-  // Hàm xử lý khi nhấn nút "Tiếp tục"
   const handleContinue = () => {
     if (validatePhoneNumber(phoneNumber)) {
-      alert("Số điện thoại hợp lệ: " + phoneNumber);
-      // Thực hiện hành động tiếp theo ở đây
+      navigation.navigate('HomeScreen'); // Điều hướng tới HomeScreen khi số hợp lệ
     } else {
       alert("Số điện thoại không đúng định dạng. Vui lòng nhập lại.");
     }
@@ -55,10 +66,6 @@ export default function App() {
           <Text style={styles.title}>Đăng nhập</Text>
         </View>
         <Text style={styles.subtitle}>Nhập số điện thoại</Text>
-        <Text style={styles.instruction}>
-          Dùng số điện thoại để đăng nhập hoặc đăng ký tài khoản tại OneHousing
-          Pro
-        </Text>
         <TextInput
           style={styles.input}
           placeholder="Nhập số điện thoại của bạn"
@@ -69,7 +76,7 @@ export default function App() {
         />
         {error ? <Text style={styles.errorText}>{error}</Text> : null}
         <TouchableOpacity
-          style={styles.buttonEnabled} // Luôn hiển thị màu xanh
+          style={styles.buttonEnabled}
           onPress={handleContinue}
         >
           <Text style={styles.buttonText}>Tiếp tục</Text>
@@ -77,6 +84,15 @@ export default function App() {
       </View>
       <StatusBar style="auto" />
     </KeyboardAvoidingView>
+  );
+}
+
+// Màn hình Home
+function HomeScreen() {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Chào mừng đến HomeScreen!</Text>
+    </View>
   );
 }
 
@@ -105,19 +121,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: "bold",
-    textAlign: "left",
+    textAlign: "center",
   },
   subtitle: {
     fontSize: 18,
     marginVertical: 5,
     textAlign: "left",
     fontWeight: "500",
-  },
-  instruction: {
-    fontSize: 14,
-    color: "gray",
-    marginBottom: 30,
-    textAlign: "left",
   },
   input: {
     height: 50,
